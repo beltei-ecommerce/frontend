@@ -36,7 +36,9 @@ export default function AuthPage() {
     try {
       await dispatch.User.login(form);
       navigate("/");
-    } catch ({ status, response }) {}
+    } catch ({ status, response }) {
+      console.log(response);
+    }
   }
 
   return (
@@ -59,6 +61,7 @@ export default function AuthPage() {
               variant="outlined"
               size="small"
               margin="normal"
+              required
               fullWidth
             >
               <InputLabel htmlFor="outlined-adornment-password">
