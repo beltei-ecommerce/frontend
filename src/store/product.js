@@ -26,12 +26,12 @@ const Product = {
   effects: {
     async getProducts(params) {
       const data = await fetchProductsAPI(params);
-      this.setProducts(data.data);
+      this.setProducts(data.data.rows);
       return data;
     },
     async getProductById(id) {
       const data = await getProductByIdAPI(id);
-      this.setProduct(data);
+      this.setProduct(data.data);
       return data;
     },
     async createProduct(payload) {
