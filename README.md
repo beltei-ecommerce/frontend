@@ -18,12 +18,12 @@ Location copy file from `.env.example` to `.env`
 - `REACT_APP_ROOT_API`: `"http://127.0.0.1:8000/api"`.
 
 
-**Follow commands**
+**Following commands**
 - Install dependencies: `npm install`
 - Start: `npm start`
 
 ## ✨🎉🎉 Great! Let's go to use  Ecommerce Application ! 🎉🎉✨
 
-**Follow users**
+**Following users**
 - Admin: `admin@example.com` | Password: `123`
 - User: `user@example.com` | Password: `123`
