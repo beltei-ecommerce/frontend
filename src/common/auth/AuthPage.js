@@ -27,7 +27,7 @@ export default function AuthPage() {
   });
 
   // Update specific input field
-  const handleChange = (e) =>
+  const onFormChange = (e) =>
     setForm((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -55,7 +55,8 @@ export default function AuthPage() {
               size="small"
               margin="normal"
               label="Email"
-              onChange={handleChange}
+              helperText={form.email}
+              onChange={onFormChange}
             />
             <FormControl
               variant="outlined"
@@ -69,7 +70,7 @@ export default function AuthPage() {
               </InputLabel>
               <OutlinedInput
                 name="password"
-                onChange={handleChange}
+                onChange={onFormChange}
                 id="outlined-adornment-password"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
