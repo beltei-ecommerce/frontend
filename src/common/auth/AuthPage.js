@@ -55,7 +55,6 @@ export default function AuthPage() {
               size="small"
               margin="normal"
               label="Email"
-              helperText={form.email}
               onChange={onFormChange}
             />
             <FormControl
