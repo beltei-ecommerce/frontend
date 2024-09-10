@@ -12,7 +12,7 @@ Before you begin, ensure you have met the following requirements:
 ### Steps
 
 
-**Res APIs connection**
+**Rest APIs connection**
 
 Location copy file from `.env.example` to `.env`
 - `REACT_APP_ROOT_API`: `"http://127.0.0.1:8000/api"`.
