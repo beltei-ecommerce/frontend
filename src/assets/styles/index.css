@@ -15,3 +15,11 @@ code {
 .MuiButtonBase-root {
   text-transform: none !important;
 }
+
+.MuiCardContent-root {
+  padding: 16px 16px 0px 16px !important;
+}
+
+.MuiCardActions-root {
+  padding: 0 16px 16px 16px !important;
+}
