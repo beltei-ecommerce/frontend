@@ -4,6 +4,7 @@ const User = {
   state: {
     user: {},
     token: null,
+    canSeeMenu: false,
   },
 
   reducers: {
@@ -15,18 +16,33 @@ const User = {
       state.token = data;
       return { ...state };
     },
+    setCanSeeMenu(state, data) {
+      state.canSeeMenu = data;
+      return { ...state };
+    },
   },
 
   effects: {
     async fetchUser() {
-      const data = await fetchUserAPI();
-      this.setUser(data.user);
+      const { user, can_see_menus } = await fetchUserAPI();
+      this.setUser(user);
+      this.setCanSeeMenu(can_see_menus);
     },
     async login(payload) {
       const data = await loginAPI(payload);
-      this.setUser(data.user);
-      this.setToken(data.token);
-      localStorage.setItem("token", data.token);
+      const { user, token, can_see_menus } = data;
+      this.setUser(user);
+      this.setToken(token);
+      this.setCanSeeMenu(can_see_menus);
+      localStorage.setItem("token", token);
+
+      return data;
+    },
+    logout() {
+      localStorage.removeItem("token");
+      this.setUser({});
+      this.setToken(null);
+      this.setCanSeeMenu(false);
     },
   },
 };

@@ -2,7 +2,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 // Use a custom React Hook function
-const IsUserLogged = () => {
+export const IsUserLogged = () => {
   const UserStore = useSelector((store) => store.User);
 
   let isLogin = false;
@@ -17,7 +17,7 @@ const IsUserLogged = () => {
   }
 
   isLogin = true;
-  return { isLogin, isRefresh };
+  return { isLogin, isRefresh, isToken: !!localToken };
 };
 
 export const ProtectedRoutes = ({ children }) => {

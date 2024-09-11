@@ -17,7 +17,7 @@ const Category = {
       state.categories = data;
       return { ...state };
     },
-    setCategoryt(state, data) {
+    setCategory(state, data) {
       state.category = data;
       return { ...state };
     },
@@ -26,12 +26,12 @@ const Category = {
   effects: {
     async getCategories(params) {
       const data = await fetchCategoriesAPI(params);
-      this.setCategories(data.data);
+      this.setCategories(data.data.rows);
       return data;
     },
     async getCategoryById(id) {
       const data = await getCategoryByIdAPI(id);
-      this.setCategoryt(data.data);
+      this.setCategory(data.data);
       return data;
     },
     async createCategory(payload) {

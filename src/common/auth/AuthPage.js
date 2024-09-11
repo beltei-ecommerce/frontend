@@ -2,17 +2,14 @@ import * as yup from "yup";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Formik, Form, Field } from "formik";
-
-import { InputText, InputPassword } from "../form";
 import { useAlert } from "../../components/BaseAlert.js";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Box from "@mui/material/Box";
+import { Formik, Form, Field } from "formik";
+import { InputText, InputPassword } from "../form";
+import BaseHeader from "../../components/BaseHeader.js";
+
+import { Card, CardActions, CardContent, Box, Typography } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import HttpsIcon from "@mui/icons-material/Https";
-import Typography from "@mui/material/Typography";
 
 const formSchema = yup.object().shape({
   email: yup
@@ -31,13 +28,16 @@ export default function AuthPage() {
   async function connect(form) {
     setLoading(true);
     try {
-      await dispatch.User.login(form);
+      const { can_see_menus } = await dispatch.User.login(form);
       setLoading(false);
+      if (can_see_menus) {
+        return navigate("/admin/product");
+      }
 
       navigate("/");
     } catch ({ status, response }) {
       setLoading(false);
-      if (status == 404 && response.data) {
+      if (status === 404 && response.data) {
         return showNotification(response.data.message, "error");
       }
 
@@ -47,8 +47,9 @@ export default function AuthPage() {
 
   return (
     <div>
+      <BaseHeader title="CC COMPUTER" />
       <Box
-        sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+        sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}
       >
         <Formik
           initialValues={{
