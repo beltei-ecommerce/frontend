@@ -1,29 +1,41 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-// import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Badge,
+  Typography,
+} from "@mui/material";
+import {
+  // AccountCircle as AccountCircleIcon,
+  Notifications as NotificationsIcon,
+  ShoppingCartCheckout as ShoppingCartCheckoutIcon,
+  Login as LoginIcon,
+} from "@mui/icons-material";
 
-export default function BaseHeader() {
+export default function BaseHeader(props) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  function goToLogin(path) {
+    return navigate(path);
+  }
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={0} color="primary">
-        <Toolbar>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
-          <h3>CC COMPUTER</h3>
-          <Box sx={{ flexGrow: 1 }} />
+    <AppBar position="relative" elevation={0} color="primary">
+      <Toolbar>
+        <Typography
+          sx={{
+            fontSize: "1.2rem",
+            cursor: "pointer",
+          }}
+          onClick={() => goToLogin("/")}
+        >
+          {props.title}
+        </Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        {location.pathname !== "/login" && (
           <Box>
             <IconButton size="large" color="inherit">
               <Badge badgeContent={4} color="error">
@@ -35,17 +47,28 @@ export default function BaseHeader() {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+
             <IconButton
               size="large"
               edge="end"
               aria-haspopup="true"
               color="inherit"
+              onClick={() => goToLogin("/login")}
             >
-              <AccountCircle />
+              <LoginIcon />
             </IconButton>
+
+            {/* <IconButton
+            size="large"
+            edge="end"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <AccountCircleIcon />
+          </IconButton> */}
           </Box>
-        </Toolbar>
-      </AppBar>
-    </Box>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 }
