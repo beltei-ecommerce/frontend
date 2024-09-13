@@ -5,6 +5,7 @@ import {
   updateProductByIdAPI,
   deleteProductByIdAPI,
 } from "../api/product.js";
+import { getImageByNameAPI } from "../api/file.js";
 
 const Product = {
   state: {
@@ -26,6 +27,18 @@ const Product = {
   effects: {
     async getProducts(params) {
       const data = await fetchProductsAPI(params);
+      // set products to show text content first, because images will take time to load
+      this.setProducts(data.data.rows);
+
+      await Promise.all(
+        data.data.rows.map(async (item) => {
+          if (item.productImages?.length) {
+            item.image = await getImageByNameAPI(item.productImages[0].name);
+          }
+        })
+      );
+
+      // re set products again to show with their image
       this.setProducts(data.data.rows);
       return data;
     },
