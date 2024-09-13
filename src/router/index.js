@@ -8,6 +8,7 @@ import AuthPage from "../common/auth/AuthPage.js";
 import AdminHomePage from "../pages/admin/AdminHomePage.js";
 import AdminProductPage from "../pages/admin/product/AdminProductPage.js";
 import AdminCategoryPage from "../pages/admin/category/AdminCategoryPage.js";
+import CategoryEditPage from "../pages/admin/category/CategoryEditPage.js";
 
 // User
 import HomePage from "../pages/home/HomePage.js";
@@ -41,6 +42,22 @@ export default function InitRouter() {
         element={
           <ProtectedRoutes>
             <AdminCategoryPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/admin/category/create"
+        element={
+          <ProtectedRoutes>
+            <CategoryEditPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/admin/category/:id"
+        element={
+          <ProtectedRoutes>
+            <CategoryEditPage />
           </ProtectedRoutes>
         }
       />

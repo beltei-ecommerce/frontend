@@ -5,7 +5,6 @@ import BaseHeader from "../../components/BaseHeader.js";
 import {
   Box,
   Card,
-  CardActionArea,
   CardMedia,
   CardContent,
   Typography,
@@ -29,8 +28,12 @@ export default function HomePage() {
 
   async function loadData() {
     try {
-      await dispatch.Product.getProducts({ page: 1, limit: 12 });
       await dispatch.Category.getCategories();
+      await dispatch.Product.getProducts({
+        page: 1,
+        limit: 12,
+        includeProductImages: true,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -42,13 +45,13 @@ export default function HomePage() {
 
   return (
     <div>
-      <BaseHeader title="CC COMPUTER" />
-      <h1 style={{ textAlign: "center" }}>Welcome to CC COMPUTER</h1>
-      <Box sx={{ mx: 3 }}>
+      <BaseHeader />
+      <div className="banner-container">
+        <div className="banner"></div>
+      </div>
+      <Box sx={{ mx: 3, my: 2 }}>
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
             width: "100%",
             marginBottom: "20px",
           }}
@@ -61,35 +64,54 @@ export default function HomePage() {
             aria-label="scrollable prevent tabs example"
           >
             {categories.map((row) => {
-              return <Tab label={row.name} key={row.id} />;
+              return (
+                <Tab label={row.name} key={row.id} sx={{ color: "white" }} />
+              );
             })}
           </Tabs>
         </div>
 
+        <Typography
+          gutterBottom
+          variant="h4"
+          component="div"
+          style={{
+            width: "100%",
+            fontWeight: "bold",
+            textAlign: "center",
+            marginBottom: "20px",
+          }}
+        >
+          HOT PRODUCTS
+        </Typography>
+
         <Grid container spacing={2}>
           {products.map((row) => {
             return (
-              <Grid item lg={2} md={3} sm={4} key={row.id}>
-                <Card>
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image=""
-                      alt="Laptop png"
-                    />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {row.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary" }}
-                      >
-                        {row.description}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
+              <Grid item lg={3} md={3} sm={4} key={row.id}>
+                <Card
+                  elevation={0}
+                  sx={{ height: "400px", p: 2, background: "none" }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="220"
+                    alt="product png"
+                    src={row.image}
+                  />
+                  <CardContent style={{ textAlign: "center" }}>
+                    <Typography
+                      gutterBottom
+                      variant="h5"
+                      component="div"
+                      style={{ fontWeight: "bold", color: "white" }}
+                    >
+                      {row.name}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: "grey" }}>
+                      {row.description}
+                    </Typography>
+                  </CardContent>
                 </Card>
               </Grid>
             );

@@ -127,7 +127,7 @@ export default function AppLayout() {
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
-        <IconButton onClick={openMenu}>
+        <IconButton onClick={openMenu} style={{ color: "white" }}>
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </DrawerHeader>
@@ -148,10 +148,11 @@ export default function AppLayout() {
                   {
                     minHeight: 48,
                     px: 2.5,
+                    color: "white",
                   },
                   location.pathname === path
                     ? {
-                        background: "#cacadd",
+                        background: "#d6333e",
                       }
                     : null,
                   open
@@ -168,6 +169,7 @@ export default function AppLayout() {
                     {
                       minWidth: 0,
                       justifyContent: "center",
+                      color: "white",
                     },
                     open
                       ? {
@@ -207,10 +209,11 @@ export default function AppLayout() {
                 {
                   minHeight: 48,
                   px: 2.5,
+                  color: "white",
                 },
                 location.pathname === path
                   ? {
-                      background: "#cacadd",
+                      background: "#d6333e",
                     }
                   : null,
                 open
@@ -227,6 +230,7 @@ export default function AppLayout() {
                   {
                     minWidth: 0,
                     justifyContent: "center",
+                    color: "white",
                   },
                   open
                     ? {

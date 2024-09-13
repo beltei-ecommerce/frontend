@@ -49,7 +49,7 @@ export default function AuthPage() {
     <div>
       <BaseHeader title="CC COMPUTER" />
       <Box
-        sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}
+        sx={{ display: "flex", justifyContent: "center", marginTop: "60px" }}
       >
         <Formik
           initialValues={{
@@ -61,7 +61,13 @@ export default function AuthPage() {
         >
           {() => (
             <Form>
-              <Card variant="outlined" sx={{ width: 500, textAlign: "center" }}>
+              <Card
+                elevation={0}
+                sx={{
+                  width: 500,
+                  textAlign: "center",
+                }}
+              >
                 <CardContent>
                   <HttpsIcon fontSize="large" />
                   <Typography
@@ -71,7 +77,7 @@ export default function AuthPage() {
                       fontSize: "clamp(2rem, 10vw, 2rem)",
                     }}
                   >
-                    Sign in
+                    Account Login
                   </Typography>
                   <p>Welcome user, please sign in to continue</p>
                   <Field
@@ -94,7 +100,7 @@ export default function AuthPage() {
                     fullWidth
                     variant="contained"
                   >
-                    Continue
+                    SIGN IN
                   </LoadingButton>
                 </CardActions>
               </Card>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   TablePagination,
@@ -32,6 +33,7 @@ export default function AdminCategoryPage() {
 
   // Variables
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const CategoryStore = useSelector((store) => store.Category);
   const { categories } = CategoryStore;
 
@@ -50,11 +52,16 @@ export default function AdminCategoryPage() {
     setTotalCount(count);
   }
 
+  function goToEdit(id = null) {
+    if (!id) {
+      return navigate("/admin/category/create");
+    }
+    return navigate(`/admin/category/${id}`);
+  }
   async function onChangePage(_, newPage) {
     setPage(newPage);
     await loadCategories({ page: newPage, rowsPerPage });
   }
-
   async function onChangeRowsPerPage(_, { props }) {
     setRowsPerPage(props.value);
     setPage(0);
@@ -64,7 +71,12 @@ export default function AdminCategoryPage() {
   return (
     <div>
       <Box component="main" sx={{ marginLeft: "4rem", p: 2 }}>
-        <AdminHeader title="Categories" />
+        <AdminHeader
+          title="Categories"
+          onCreate={() => {
+            goToEdit();
+          }}
+        />
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
           <TableContainer sx={{ maxHeight: "78vh" }}>
             <Table stickyHeader aria-label="sticky table">
@@ -84,7 +96,13 @@ export default function AdminCategoryPage() {
               <TableBody>
                 {categories.map((row) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.id}
+                      onClick={() => goToEdit(row.id)}
+                    >
                       {headers.map((column) => {
                         const value = column.id
                           .split(".")

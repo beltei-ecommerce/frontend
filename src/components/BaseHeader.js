@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import logo from "../assets/images/logo.png";
 import {
   AppBar,
   Box,
@@ -23,7 +24,7 @@ export default function BaseHeader(props) {
   }
 
   return (
-    <AppBar position="relative" elevation={0} color="primary">
+    <AppBar position="relative" elevation={0} color="secondary">
       <Toolbar>
         <Typography
           sx={{
@@ -32,7 +33,7 @@ export default function BaseHeader(props) {
           }}
           onClick={() => goToLogin("/")}
         >
-          {props.title}
+          <img src={logo} alt="logo" style={{ height: "50px" }} />
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         {location.pathname !== "/login" && (

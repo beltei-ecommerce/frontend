@@ -4,7 +4,13 @@ import {
   FilterAlt as FilterAltIcon,
 } from "@mui/icons-material";
 
-export default function AdminHeader(props) {
+export default function AdminHeader({
+  children,
+  title,
+  hideBth = true,
+  onCreate,
+  onFilter,
+}) {
   return (
     <div
       style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}
@@ -15,17 +21,30 @@ export default function AdminHeader(props) {
           fontWeight: "bold",
         }}
       >
-        {props.title}
+        {title}
       </Typography>
       <Box sx={{ flexGrow: 1 }} />
-      <Stack spacing={1} direction="row">
-        {props.children}
-        <Button variant="contained" startIcon={<AddIcon />}>
-          Create
-        </Button>
-        <Button variant="outlined" startIcon={<FilterAltIcon />}>
-          Filter
-        </Button>
+      <Stack spacing={0.5} direction="row">
+        {children}
+        {hideBth && (
+          <div>
+            <Button
+              variant="contained"
+              style={{ marginRight: "12px" }}
+              startIcon={<AddIcon />}
+              onClick={onCreate}
+            >
+              Create
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<FilterAltIcon />}
+              onClick={onFilter}
+            >
+              Filter
+            </Button>
+          </div>
+        )}
       </Stack>
     </div>
   );

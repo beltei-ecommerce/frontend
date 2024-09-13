@@ -37,10 +37,10 @@ const Category = {
     async createCategory(payload) {
       return createCategorytAPI(payload);
     },
-    async updateCategory(id, payload) {
+    async updateCategoryById({ id, payload }) {
       return updateCategorytByIdAPI(id, payload);
     },
-    async deleteCategory(id) {
+    async deleteCategoryById(id) {
       return deleteCategorytByIdAPI(id);
     },
   },

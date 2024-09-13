@@ -1,5 +1,7 @@
 :root {
-  --mui-palette-surface-main: #F8F9FC;
+  --mui-palette-primary-main: #cc000e;
+  --mui-palette-secondary-main: #161313;
+  --mui-palette-surface-main: #130f0f;
   /* ...other variables */
 }
 
@@ -11,6 +13,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--mui-palette-surface-main) !important;
+  color: white !important;
 }
 
 code {
@@ -18,12 +21,23 @@ code {
     monospace;
 }
 
-.MuiDrawer-paper {
-  background-color: var(--mui-palette-surface-main) !important;
+.MuiCardMedia-img {
+  object-fit: contain !important;
+}
+
+.MuiInputBase-root,
+.MuiButtonBase-root,
+.MuiCard-root,
+table {
+  border-radius: 0 !important;
 }
 
 .MuiButtonBase-root {
   text-transform: none !important;
+}
+
+.MuiDrawer-paper {
+  background-color: var(--mui-palette-secondary-main) !important;
 }
 
 .MuiCardContent-root {
