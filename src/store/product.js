@@ -50,10 +50,10 @@ const Product = {
     async createProduct(payload) {
       return createProductAPI(payload);
     },
-    async updateProduct(id, payload) {
+    async updateProductById({ id, payload }) {
       return updateProductByIdAPI(id, payload);
     },
-    async deleteProduct(id) {
+    async deleteProductById(id) {
       return deleteProductByIdAPI(id);
     },
   },

@@ -7,6 +7,7 @@ import AuthPage from "../common/auth/AuthPage.js";
 // Admin
 import AdminHomePage from "../pages/admin/AdminHomePage.js";
 import AdminProductPage from "../pages/admin/product/AdminProductPage.js";
+import ProductEditPage from "../pages/admin/product/ProductEditPage.js";
 import AdminCategoryPage from "../pages/admin/category/AdminCategoryPage.js";
 import CategoryEditPage from "../pages/admin/category/CategoryEditPage.js";
 
@@ -18,9 +19,10 @@ export default function InitRouter() {
     <Routes>
       <Route path="/login" element={<AuthPage />} />
 
-      {/* <Route path="/" element={<HomePage />} /> */}
-
+      {/* USER ---------------------- */}
       <Route path="/" element={<HomePage />} />
+
+      {/* ADMIN ---------------------- */}
       <Route
         path="/admin"
         element={
@@ -34,6 +36,14 @@ export default function InitRouter() {
         element={
           <ProtectedRoutes>
             <AdminProductPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/admin/product/:id"
+        element={
+          <ProtectedRoutes>
+            <ProductEditPage />
           </ProtectedRoutes>
         }
       />

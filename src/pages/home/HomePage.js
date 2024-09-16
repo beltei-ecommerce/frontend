@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { debounce } from "lodash";
 // import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import BaseHeader from "../../components/BaseHeader.js";
@@ -11,6 +12,7 @@ import {
   Grid,
   Tab,
   Tabs,
+  TextField,
 } from "@mui/material";
 
 export default function HomePage() {
@@ -21,31 +23,54 @@ export default function HomePage() {
   const { products } = ProductStore;
   const { categories } = CategoryStore;
   const [tab, setTab] = useState(0);
+  const [categoryId, setSategoryId] = useState(null);
 
   useEffect(() => {
     loadData(); // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    if (categoryId === null) return;
+
+    loadProducts({}); // eslint-disable-next-line
+  }, [categoryId]);
 
   async function loadData() {
-    try {
-      await dispatch.Category.getCategories();
-      await dispatch.Product.getProducts({
-        page: 1,
-        limit: 12,
-        includeProductImages: true,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    await dispatch.Category.getCategories();
+    await loadProducts({});
   }
-
-  function changeTab(_, v) {
+  async function loadProducts({ name = null }) {
+    await dispatch.Product.getProducts({
+      page: 1,
+      limit: 12,
+      name,
+      include_product_images: true,
+      ...(categoryId && {
+        fk_category_id: categoryId,
+      }),
+    });
+  }
+  async function changeTab(_, v) {
     setTab(v);
+    setSategoryId(v);
   }
+  const search = useCallback(
+    // Prevent load data a lot of times
+    debounce(function s(event) {
+      loadProducts({ name: event.target.value });
+    }, 900)
+  );
 
   return (
     <div>
-      <BaseHeader />
+      <BaseHeader>
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search for products..."
+          style={{ background: "white", width: "500px" }}
+          onChange={search}
+        />
+      </BaseHeader>
       <div className="banner-container">
         <div className="banner"></div>
       </div>
@@ -63,9 +88,14 @@ export default function HomePage() {
             scrollButtons={false}
             aria-label="scrollable prevent tabs example"
           >
-            {categories.map((row) => {
+            {[{ name: "POPULAR" }, ...categories].map((row, index) => {
               return (
-                <Tab label={row.name} key={row.id} sx={{ color: "white" }} />
+                <Tab
+                  label={row.name}
+                  key={index}
+                  value={row.id}
+                  sx={{ color: "white" }}
+                />
               );
             })}
           </Tabs>
@@ -84,6 +114,15 @@ export default function HomePage() {
         >
           HOT PRODUCTS
         </Typography>
+
+        {!products.length && (
+          <Typography
+            variant="body1"
+            sx={{ color: "grey", textAlign: "center", mb: "40px" }}
+          >
+            No available products yet
+          </Typography>
+        )}
 
         <Grid container spacing={2}>
           {products.map((row) => {

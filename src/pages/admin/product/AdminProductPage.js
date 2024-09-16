@@ -19,6 +19,12 @@ const headers = [
   { id: "product_code", label: "Code", minWidth: 80 },
   { id: "name", label: "Name", minWidth: 170 },
   { id: "description", label: "Description", minWidth: 170 },
+  {
+    id: "price",
+    label: "Price",
+    minWidth: 50,
+    format: (value) => `$${Number(value).toFixed(2)}`,
+  },
   { id: "category.name", label: "Category", minWidth: 50 },
   {
     id: "created_at",
