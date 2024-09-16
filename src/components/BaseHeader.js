@@ -15,7 +15,7 @@ import {
   Login as LoginIcon,
 } from "@mui/icons-material";
 
-export default function BaseHeader(props) {
+export default function BaseHeader({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,6 +35,8 @@ export default function BaseHeader(props) {
         >
           <img src={logo} alt="logo" style={{ height: "50px" }} />
         </Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        {children}
         <Box sx={{ flexGrow: 1 }} />
         {location.pathname !== "/login" && (
           <Box>
