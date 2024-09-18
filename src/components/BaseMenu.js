@@ -2,6 +2,7 @@ import * as React from "react";
 import { styled } from "@mui/material/styles";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import logo from "../assets/images/logo.png";
 import {
   Box,
   Drawer as MuiDrawer,
@@ -127,6 +128,8 @@ export default function AppLayout() {
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
+        {open && <img src={logo} alt="logo" style={{ height: "45px" }} />}
+
         <IconButton onClick={openMenu} style={{ color: "white" }}>
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>

@@ -13,6 +13,7 @@ import {
   Tab,
   Tabs,
   TextField,
+  Skeleton,
 } from "@mui/material";
 
 export default function HomePage() {
@@ -132,12 +133,28 @@ export default function HomePage() {
                   elevation={0}
                   sx={{ height: "400px", p: 2, background: "none" }}
                 >
-                  <CardMedia
-                    component="img"
-                    height="220"
-                    alt="product png"
-                    src={row.image}
-                  />
+                  {!row.image && (
+                    <div>
+                      <Skeleton
+                        sx={{ background: "#7878785d" }}
+                        variant="rectangular"
+                        width="100%"
+                        height={175}
+                      />
+                      <Skeleton sx={{ background: "#7878785d" }} width="100%" />
+                      <Skeleton sx={{ background: "#7878785d" }} width="60%" />
+                    </div>
+                  )}
+
+                  {row.image && (
+                    <CardMedia
+                      component="img"
+                      height="220"
+                      alt="product png"
+                      src={row.image}
+                    />
+                  )}
+
                   <CardContent style={{ textAlign: "center" }}>
                     <Typography
                       gutterBottom

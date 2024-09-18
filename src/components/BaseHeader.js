@@ -40,11 +40,16 @@ export default function BaseHeader({ children }) {
         <Box sx={{ flexGrow: 1 }} />
         {location.pathname !== "/login" && (
           <Box>
-            <IconButton size="large" color="inherit">
+            <IconButton
+              size="large"
+              color="inherit"
+              onClick={() => goToLogin("/cart")}
+            >
               <Badge badgeContent={4} color="error">
                 <ShoppingCartCheckoutIcon />
               </Badge>
             </IconButton>
+
             <IconButton size="large" color="inherit">
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
