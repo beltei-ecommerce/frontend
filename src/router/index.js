@@ -13,6 +13,7 @@ import CategoryEditPage from "../pages/admin/category/CategoryEditPage.js";
 
 // User
 import HomePage from "../pages/home/HomePage.js";
+import CartPage from "../pages/home/CartPage.js";
 
 export default function InitRouter() {
   return (
@@ -21,6 +22,7 @@ export default function InitRouter() {
 
       {/* USER ---------------------- */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/cart" element={<CartPage />} />
 
       {/* ADMIN ---------------------- */}
       <Route
