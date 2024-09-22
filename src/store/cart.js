@@ -1,5 +1,5 @@
-import { fetchCartsAPI } from "../api/cart.js";
 import { getImageByNameAPI } from "../api/file.js";
+import { fetchCartsAPI, updateCartByIdAPI, deleteCartByIdAPI } from "../api/cart.js";
 
 const Cart = {
   state: {
@@ -31,6 +31,12 @@ const Cart = {
       this.setCarts(data.data);
 
       return data;
+    },
+    async updateCartById({ id, payload }) {
+      return updateCartByIdAPI(id, payload);
+    },
+    async deleteCartById(id) {
+      return deleteCartByIdAPI(id);
     },
   },
 };

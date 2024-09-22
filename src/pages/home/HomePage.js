@@ -90,14 +90,7 @@ export default function HomePage() {
             aria-label="scrollable prevent tabs example"
           >
             {[{ name: "POPULAR" }, ...categories].map((row, index) => {
-              return (
-                <Tab
-                  label={row.name}
-                  key={index}
-                  value={row.id}
-                  sx={{ color: "white" }}
-                />
-              );
+              return <Tab label={row.name} key={index} value={row.id} />;
             })}
           </Tabs>
         </div>
@@ -130,7 +123,7 @@ export default function HomePage() {
             return (
               <Grid item lg={3} md={3} sm={4} key={row.id}>
                 <Card
-                  elevation={0}
+                  variant="outlined"
                   sx={{ height: "400px", p: 2, background: "none" }}
                 >
                   {!row.image && (
@@ -160,7 +153,7 @@ export default function HomePage() {
                       gutterBottom
                       variant="h5"
                       component="div"
-                      style={{ fontWeight: "bold", color: "white" }}
+                      style={{ fontWeight: "bold" }}
                     >
                       {row.name}
                     </Typography>

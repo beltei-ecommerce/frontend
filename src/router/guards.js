@@ -25,13 +25,18 @@ export const ProtectedRoutes = ({ children }) => {
   const dispatch = useDispatch();
   const { isLogin, isRefresh } = IsUserLogged();
 
-  // If the user is not authenticated, redirect to login page
+  // If the user is not authenticated
   if (!isLogin) {
-    return <Navigate to="/login" />;
+    // User try to admin pages, redirect to login page
+    if (location.pathname.search("admin") === 1) {
+      return <Navigate to="/login" />;
+    }
+
+    // Redirect to unauthenticated pages
+    return children;
 
     // If the user is already logged and try to login, redirect to home page
   } else if (isLogin && location.pathname === "/login") {
-    // dispatch.User.fetchUser();
     return <Navigate to="/" />;
   } else {
     if (isLogin && isRefresh) {

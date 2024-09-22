@@ -7,6 +7,8 @@ import { LinearProgress } from "@mui/material";
 
 import BaseMenu from "./components/BaseMenu.js";
 import { BaseAlertProvider } from "./components/BaseAlert.js";
+import { DialogsProvider } from "@toolpad/core/useDialogs";
+import { NotificationsProvider } from "@toolpad/core/useNotifications";
 
 export default function App() {
   const { canSeeMenu } = useSelector((store) => store.User);
@@ -30,12 +32,15 @@ export default function App() {
             <LinearProgress />
           </div>
         )}
+        <NotificationsProvider>
+          <DialogsProvider>
+            <BaseAlertProvider>
+              {canSeeMenu && <BaseMenu />}
 
-        <BaseAlertProvider>
-          {canSeeMenu && <BaseMenu />}
-
-          <Router />
-        </BaseAlertProvider>
+              <Router />
+            </BaseAlertProvider>
+          </DialogsProvider>
+        </NotificationsProvider>
       </>
     </ThemeProvider>
   );

@@ -8,14 +8,14 @@ export async function getCartByIdAPI(id) {
   return http.get(`/carts/${id}`);
 }
 
-export async function createCarttAPI(payload) {
+export async function createCartAPI(payload) {
   return http.post("/carts", payload);
 }
 
-export async function updateCarttByIdAPI(id, payload) {
+export async function updateCartByIdAPI(id, payload) {
   return http.put(`/carts/${id}`, payload);
 }
 
-export async function deleteCarttByIdAPI(id) {
+export async function deleteCartByIdAPI(id) {
   return http.delete(`/carts/${id}`);
 }

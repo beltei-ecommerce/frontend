@@ -30,6 +30,8 @@ export default function AuthPage() {
     try {
       const { can_see_menus } = await dispatch.User.login(form);
       setLoading(false);
+
+      await dispatch.User.fetchUser();
       if (can_see_menus) {
         return navigate("/admin/product");
       }

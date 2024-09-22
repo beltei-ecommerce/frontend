@@ -5,6 +5,7 @@ const User = {
     user: {},
     token: null,
     canSeeMenu: false,
+    items_in_cart: 0
   },
 
   reducers: {
@@ -20,13 +21,18 @@ const User = {
       state.canSeeMenu = data;
       return { ...state };
     },
+    setItemsInCart(state, data) {
+      state.items_in_cart = data;
+      return { ...state };
+    },
   },
 
   effects: {
     async fetchUser() {
-      const { user, can_see_menus } = await fetchUserAPI();
+      const { user, can_see_menus, items_in_cart } = await fetchUserAPI();
       this.setUser(user);
       this.setCanSeeMenu(can_see_menus);
+      this.setItemsInCart(items_in_cart);
     },
     async login(payload) {
       const data = await loginAPI(payload);
