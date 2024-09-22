@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import logo from "../assets/images/logo.png";
 import {
   AppBar,
@@ -18,6 +19,7 @@ import {
 export default function BaseHeader({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { items_in_cart } = useSelector((store) => store.User);
 
   function goToLogin(path) {
     return navigate(path);
@@ -45,7 +47,7 @@ export default function BaseHeader({ children }) {
               color="inherit"
               onClick={() => goToLogin("/cart")}
             >
-              <Badge badgeContent={4} color="error">
+              <Badge badgeContent={items_in_cart} color="error">
                 <ShoppingCartCheckoutIcon />
               </Badge>
             </IconButton>

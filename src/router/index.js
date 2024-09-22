@@ -21,8 +21,22 @@ export default function InitRouter() {
       <Route path="/login" element={<AuthPage />} />
 
       {/* USER ---------------------- */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/cart" element={<CartPage />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoutes>
+            <HomePage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoutes>
+            <CartPage />
+          </ProtectedRoutes>
+        }
+      />
 
       {/* ADMIN ---------------------- */}
       <Route
