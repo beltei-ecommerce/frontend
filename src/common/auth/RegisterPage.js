@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAlert } from "../../components/BaseAlert.js";
 import { Formik, Form, Field } from "formik";
-import { InputText, InputPassword } from "../form";
+import { InputText, InputPassword } from "../form/index.js";
 import BaseHeader from "../../components/BaseHeader.js";
 
 import { Card, CardActions, CardContent, Box, Typography } from "@mui/material";
@@ -19,7 +19,7 @@ const formSchema = yup.object().shape({
   password: yup.string().required("Field required"),
 });
 
-export default function AuthPage() {
+export default function RegisterPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { showNotification } = useAlert();
@@ -79,9 +79,9 @@ export default function AuthPage() {
                       fontSize: "clamp(2rem, 10vw, 2rem)",
                     }}
                   >
-                    Account Login
+                    Sign up an account
                   </Typography>
-                  <p>Welcome user, please sign in to continue</p>
+                  <p>Welcome to Public of Gamer, please sign up to continue</p>
                   <Field
                     component={InputText}
                     name="email"
@@ -102,7 +102,7 @@ export default function AuthPage() {
                     fullWidth
                     variant="contained"
                   >
-                    SIGN IN
+                    SIGN UP
                   </LoadingButton>
                 </CardActions>
               </Card>

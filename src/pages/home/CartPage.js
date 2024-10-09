@@ -15,7 +15,11 @@ import {
   TextField,
   Card,
 } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import {
+  Delete as DeleteIcon,
+  AddCircleOutline as AddCircleOutlineIcon,
+  RemoveCircleOutline as RemoveCircleOutlineIcon,
+} from "@mui/icons-material";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -37,8 +41,8 @@ export default function CartPage() {
   async function loadData() {
     await dispatch.Cart.getCarts();
   }
-  function goToProducts() {
-    return navigate("/");
+  function goTo(path) {
+    return navigate(path);
   }
   async function onDeleteItem(id) {
     const confirmed = await dialogs.confirm(
@@ -61,26 +65,11 @@ export default function CartPage() {
       console.log(error);
     }
   }
-  async function onChangeItem(id, event) {
+  async function onChangeItem(item, isPlusQty) {
     try {
-      const disabled = itemsRef.current.find(
-        (item) =>
-          !item.firstChild.firstChild.value ||
-          item.firstChild.firstChild.value < 1
-      );
-      setDisabledCheckoutBtn(!!disabled);
-
-      if (!event.target.value) return;
-      if (event.target.value < 1) {
-        notifications.show("Input quantity is imposible", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-        return;
-      }
-
-      const payload = { quantity: event.target.value };
-      await dispatch.Cart.updateCartById({ id, payload });
+      const quantity = isPlusQty ? item.quantity + 1 : item.quantity - 1;
+      const payload = { quantity };
+      await dispatch.Cart.updateCartById({ id: item.id, payload });
       notifications.show("Your quantity updated", {
         severity: "success",
         autoHideDuration: 4000,
@@ -94,12 +83,12 @@ export default function CartPage() {
   return (
     <div>
       <BaseHeader />
-      <Box sx={{ m: 3 }}>
+      <Box sx={{ mx: 24, my: 3 }}>
         {carts.length > 0 && (
           <div style={{ marginBottom: 20, textAlign: "right" }}>
             <Button
               variant="contained"
-              onClick={goToProducts}
+              onClick={() => goTo("/checkout")}
               disabled={disabledCheckoutBtn}
             >
               Check out
@@ -116,8 +105,8 @@ export default function CartPage() {
               You don't have items yet, please go to add one.
             </Typography>
 
-            <Button variant="outlined" onClick={goToProducts}>
-              View Products
+            <Button variant="outlined" onClick={() => goTo("/")}>
+              Explor items
             </Button>
           </div>
         )}
@@ -129,10 +118,13 @@ export default function CartPage() {
               <Grid item xs={3}>
                 Name
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={1}>
                 Code
               </Grid>
               <Grid item xs={2}>
+                Available quantity
+              </Grid>
+              <Grid item xs={1}>
                 Quantity
               </Grid>
               <Grid item xs={1}>
@@ -148,7 +140,7 @@ export default function CartPage() {
 
         {carts.map((row, index) => {
           return (
-            <Card sx={{ mt: 1 }} key={row.id} variant="outlined">
+            <Card sx={{ mt: 1 }} key={row.id} elevation={0}>
               <Grid container spacing={1}>
                 <Grid
                   item
@@ -186,7 +178,7 @@ export default function CartPage() {
                 </Grid>
                 <Grid
                   item
-                  xs={2}
+                  xs={1}
                   sx={{ display: "flex", alignItems: "center" }}
                 >
                   {row.product.product_code}
@@ -196,16 +188,30 @@ export default function CartPage() {
                   xs={2}
                   sx={{ display: "flex", alignItems: "center" }}
                 >
-                  <TextField
-                    ref={(el) => (itemsRef.current[index] = el)}
-                    variant="outlined"
+                  {row.product.quantity}
+                </Grid>
+                <Grid
+                  item
+                  xs={1}
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <IconButton
                     size="small"
-                    placeholder="Quantity"
-                    type="number"
-                    sx={{ width: 140 }}
-                    defaultValue={row.quantity}
-                    onChange={(event) => onChangeItem(row.id, event)}
-                  />
+                    color="inherit"
+                    disabled={row.quantity === 1}
+                    onClick={() => onChangeItem(row, false)}
+                  >
+                    <RemoveCircleOutlineIcon />
+                  </IconButton>
+                  <span style={{ fontWeight: "bold" }}>{row.quantity}</span>
+                  <IconButton
+                    size="small"
+                    color="inherit"
+                    disabled={row.quantity === row.product.quantity}
+                    onClick={() => onChangeItem(row, true)}
+                  >
+                    <AddCircleOutlineIcon />
+                  </IconButton>
                 </Grid>
                 <Grid
                   item

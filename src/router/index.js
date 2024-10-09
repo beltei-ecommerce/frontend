@@ -2,7 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import { ProtectedRoutes } from "./guards.js";
 
 // Authentication
-import AuthPage from "../common/auth/AuthPage.js";
+import LoginPage from "../common/auth/LoginPage.js";
+import RegisterPage from "../common/auth/RegisterPage.js";
 
 // Admin
 import AdminHomePage from "../pages/admin/AdminHomePage.js";
@@ -14,11 +15,13 @@ import CategoryEditPage from "../pages/admin/category/CategoryEditPage.js";
 // User
 import HomePage from "../pages/home/HomePage.js";
 import CartPage from "../pages/home/CartPage.js";
+import CheckoutPage from "../pages/home/CheckoutPage.js";
 
 export default function InitRouter() {
   return (
     <Routes>
-      <Route path="/login" element={<AuthPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<RegisterPage />} />
 
       {/* USER ---------------------- */}
       <Route
@@ -34,6 +37,14 @@ export default function InitRouter() {
         element={
           <ProtectedRoutes>
             <CartPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoutes>
+            <CheckoutPage />
           </ProtectedRoutes>
         }
       />
