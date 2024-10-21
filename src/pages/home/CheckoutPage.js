@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useDialogs } from "@toolpad/core/useDialogs";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import Button from "@mui/material/Button";
 import BaseHeader from "../../components/BaseHeader.js";
-import AddressDialog from "../../components/home/checkout/AddressDialog.js";
+import AddressDialog from "../../components/checkout/AddressDialog.js";
+import AddAddressDialog from "../../components/checkout/AddAddressDialog.js";
 import PaymentDialog from "../../components/PaymentDialog.js";
 import {
   Box,
@@ -14,25 +13,27 @@ import {
   Skeleton,
   IconButton,
   Typography,
-  TextField,
   Card,
   Divider,
 } from "@mui/material";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import {
+  AddCircleOutline as AddCircleOutlineIcon,
+  RemoveCircleOutline as RemoveCircleOutlineIcon,
+} from "@mui/icons-material";
 
 export default function CheckoutPage() {
-  const navigate = useNavigate();
   const notifications = useNotifications();
-  const dialogs = useDialogs();
   const dispatch = useDispatch();
   const CartStore = useSelector((store) => store.Cart);
   const UserStore = useSelector((store) => store.User);
+  const AddressStore = useSelector((store) => store.Address);
+  const { addresses } = AddressStore;
   const { carts } = CartStore;
-  const [disabledCheckoutBtn, setDisabledCheckoutBtn] = useState(false);
-  const itemsRef = useRef([]);
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
+  const [openAddAddressDialog, setOpenAddAddressDialog] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [defaultAddress, setDefaultAddress] = useState({});
 
   useEffect(() => {
     if (!UserStore.token) return;
@@ -46,6 +47,12 @@ export default function CheckoutPage() {
     );
     setTotalAmount(amount);
   }, [carts]);
+  useEffect(() => {
+    const address = addresses.find(({ is_default }) => is_default);
+    if (address) {
+      setDefaultAddress(address);
+    }
+  }, [addresses]);
 
   function handleOpenPaymentDialog() {
     setOpenPaymentDialog(!openPaymentDialog);
@@ -53,30 +60,21 @@ export default function CheckoutPage() {
   function handleOpenAddressDialog() {
     setOpenAddressDialog(!openAddressDialog);
   }
+  function handleOpenAddAddressDialog() {
+    setOpenAddAddressDialog(!openAddAddressDialog);
+  }
   async function loadData() {
     await dispatch.Cart.getCarts();
   }
-  async function onChangeItem(id, event) {
+  async function loadAdress() {
+    await dispatch.Address.fetchAddresses();
+  }
+  async function onChangeItem(item, isPlusQty) {
     try {
-      const disabled = itemsRef.current.find(
-        (item) =>
-          !item.firstChild.firstChild.value ||
-          item.firstChild.firstChild.value < 1
-      );
-      setDisabledCheckoutBtn(!!disabled);
-
-      if (!event.target.value) return;
-      if (event.target.value < 1) {
-        notifications.show("Input quantity is imposible", {
-          severity: "error",
-          autoHideDuration: 3000,
-        });
-        return;
-      }
-
-      const payload = { quantity: event.target.value };
-      await dispatch.Cart.updateCartById({ id, payload });
-      notifications.show("Your quantity updated", {
+      const quantity = isPlusQty ? item.quantity + 1 : item.quantity - 1;
+      const payload = { quantity };
+      await dispatch.Cart.updateCartById({ id: item.id, payload });
+      notifications.show("Your quantity is changed", {
         severity: "success",
         autoHideDuration: 4000,
       });
@@ -101,6 +99,16 @@ export default function CheckoutPage() {
           handleOpenAddressDialog();
         }}
       />
+      <AddAddressDialog
+        openAddressDialog={openAddAddressDialog}
+        address={null}
+        onClose={() => {
+          handleOpenAddAddressDialog();
+        }}
+        loadData={() => {
+          loadAdress();
+        }}
+      />
       <Box sx={{ mx: 24, my: 3 }}>
         <Grid container spacing={2}>
           <Grid item xs={8}>
@@ -110,11 +118,18 @@ export default function CheckoutPage() {
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     Shipping address
                   </Typography>
-                  <Typography variant="body1">
-                    Chetra Hong +855 60705802 Trapang Tloeung Market, Veng Sreng
-                    Blvd, Phnom Penh / Phnom Penh Phnom Penh, Phnom
-                    Penh/Cambodia, Cambodia, 1208
-                  </Typography>
+
+                  {!!addresses.length && (
+                    <Typography variant="body1">
+                      {defaultAddress.name} {defaultAddress.telephone},{" "}
+                      {defaultAddress.address1} / {defaultAddress.address2},{" "}
+                      {defaultAddress.region}, {defaultAddress.post_code},{" "}
+                      {defaultAddress.city}, {defaultAddress.country}
+                    </Typography>
+                  )}
+                  {!addresses.length && (
+                    <Typography variant="body1">Add new address</Typography>
+                  )}
                 </Grid>
                 <Grid
                   item
@@ -125,18 +140,31 @@ export default function CheckoutPage() {
                     alignItems: "center",
                   }}
                 >
-                  <Button variant="outlined" onClick={handleOpenAddressDialog}>
-                    Change
-                  </Button>
+                  {!!addresses.length && (
+                    <Button
+                      variant="outlined"
+                      onClick={handleOpenAddressDialog}
+                    >
+                      Change
+                    </Button>
+                  )}
+                  {!addresses.length && (
+                    <Button
+                      variant="outlined"
+                      onClick={handleOpenAddAddressDialog}
+                    >
+                      Add
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </Card>
-            <Card elevation={0} sx={{ p: 2, mt: 1 }}>
+            {/* <Card elevation={0} sx={{ p: 2, mt: 1 }}>
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 Payment Methods
               </Typography>
               <Typography variant="body1">Add a new card</Typography>
-            </Card>
+            </Card> */}
             <Card elevation={0} sx={{ p: 2, mt: 1 }}>
               {carts.map((row, index) => {
                 return (
@@ -145,7 +173,7 @@ export default function CheckoutPage() {
                       <Grid
                         item
                         xs={2}
-                        sx={{ display: "flex", justifyContent: "center" }}
+                        sx={{ display: "flex", alignItems: "center" }}
                       >
                         {!row.product.image && (
                           <div style={{ width: 100, marginTop: 4 }}>
@@ -175,35 +203,45 @@ export default function CheckoutPage() {
                           />
                         )}
                       </Grid>
-                      <Grid
-                        item
-                        xs={3}
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        {row.product.name}
+                      <Grid item xs={6}>
+                        <p>
+                          Name: <strong>{row.product.name}</strong>
+                        </p>
+                        <p>
+                          Brand: <strong>{row.product.category.name}</strong>
+                        </p>
+                        <p>
+                          Code: <strong>{row.product.product_code}</strong>
+                        </p>
+                        <p>
+                          Available quantity:{" "}
+                          <strong>{row.product.quantity}</strong>
+                        </p>
                       </Grid>
                       <Grid
                         item
                         xs={2}
                         sx={{ display: "flex", alignItems: "center" }}
                       >
-                        {row.product.product_code}
-                      </Grid>
-                      <Grid
-                        item
-                        xs={2}
-                        sx={{ display: "flex", alignItems: "center" }}
-                      >
-                        <TextField
-                          ref={(el) => (itemsRef.current[index] = el)}
-                          variant="outlined"
+                        <IconButton
                           size="small"
-                          placeholder="Quantity"
-                          type="number"
-                          sx={{ width: 140 }}
-                          defaultValue={row.quantity}
-                          onChange={(event) => onChangeItem(row.id, event)}
-                        />
+                          color="inherit"
+                          disabled={row.quantity === 1}
+                          onClick={() => onChangeItem(row, false)}
+                        >
+                          <RemoveCircleOutlineIcon />
+                        </IconButton>
+                        <span style={{ fontWeight: "bold" }}>
+                          {row.quantity}
+                        </span>
+                        <IconButton
+                          size="small"
+                          color="inherit"
+                          disabled={row.quantity === row.product.quantity}
+                          onClick={() => onChangeItem(row, true)}
+                        >
+                          <AddCircleOutlineIcon />
+                        </IconButton>
                       </Grid>
                       <Grid
                         item
@@ -211,12 +249,12 @@ export default function CheckoutPage() {
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          fontWeight: "bold",
                         }}
                       >
                         ${Number(row.product.price).toFixed(2)}
                       </Grid>
                     </Grid>
+                    <Divider />
                   </Card>
                 );
               })}
@@ -229,18 +267,19 @@ export default function CheckoutPage() {
                 Summary
               </Typography>
               <Typography variant="body1">
-                Subtotal US: <strong>${totalAmount}</strong>
+                Subtotal US: <strong>${Number(totalAmount).toFixed(2)}</strong>
               </Typography>
 
               <Divider sx={{ my: 2 }} />
 
               <Typography variant="body1">
-                Total US: <strong>${totalAmount}</strong>
+                Total US: <strong>${Number(totalAmount).toFixed(2)}</strong>
               </Typography>
               <Button
                 variant="contained"
                 fullWidth
                 sx={{ mt: 2 }}
+                disabled={!addresses.length || !carts.length}
                 onClick={handleOpenPaymentDialog}
               >
                 Place order

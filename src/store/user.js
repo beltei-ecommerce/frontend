@@ -1,11 +1,19 @@
-import { fetchUserAPI, loginAPI } from "../api/auth.js";
+import {
+  fetchUserAPI,
+  loginAPI,
+  registerAPI,
+  verifyResetPasswordAPI,
+  resetPasswordAPI,
+  sendRequestResetPasswordAPI,
+} from "../api/auth.js";
 
 const User = {
   state: {
     user: {},
     token: null,
     canSeeMenu: false,
-    items_in_cart: 0
+    items_in_cart: 0,
+    number_of_orders: 0,
   },
 
   reducers: {
@@ -25,14 +33,20 @@ const User = {
       state.items_in_cart = data;
       return { ...state };
     },
+    setNumberOfOrders(state, data) {
+      state.number_of_orders = data;
+      return { ...state };
+    },
   },
 
   effects: {
     async fetchUser() {
-      const { user, can_see_menus, items_in_cart } = await fetchUserAPI();
+      const { user, can_see_menus, items_in_cart, number_of_orders } =
+        await fetchUserAPI();
       this.setUser(user);
       this.setCanSeeMenu(can_see_menus);
       this.setItemsInCart(items_in_cart);
+      this.setNumberOfOrders(number_of_orders);
     },
     async login(payload) {
       const data = await loginAPI(payload);
@@ -44,11 +58,25 @@ const User = {
 
       return data;
     },
+    async register(payload) {
+      return registerAPI(payload);
+    },
+    async verifyResetPassword(params) {
+      return verifyResetPasswordAPI(params);
+    },
+    async sendRequestResetPassword(payload) {
+      return sendRequestResetPasswordAPI(payload);
+    },
+    async resetPassword(payload) {
+      return resetPasswordAPI(payload);
+    },
     logout() {
       localStorage.removeItem("token");
       this.setUser({});
       this.setToken(null);
       this.setCanSeeMenu(false);
+      this.setItemsInCart(0);
+      this.setNumberOfOrders(0);
     },
   },
 };

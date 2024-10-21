@@ -1,13 +1,12 @@
-import * as React from "react";
-import { useDispatch } from "react-redux";
+import { useState, useRef, Fragment } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import * as yup from "yup";
-import { InputText } from "../../../common/form";
+import { InputText } from "../../common/form";
 import { Close as CloseIcon } from "@mui/icons-material";
 import { Formik, Form, Field } from "formik";
 import {
   Card,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,6 +14,7 @@ import {
   IconButton,
   Grid,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const formSchema = yup.object().shape({
   name: yup.string().required("Field required"),
@@ -26,32 +26,67 @@ const formSchema = yup.object().shape({
   region: yup.string().required("Field required"),
 });
 
-export default function AddAddressDialog({ openAddressDialog, onClose, loadData }) {
+export default function AddAddressDialog({
+  openAddressDialog,
+  address,
+  onClose,
+  loadData,
+}) {
   const dispatch = useDispatch();
   const notifications = useNotifications();
-  const formRef = React.useRef(null);
+  const AddressStore = useSelector((store) => store.Address);
+  const { addresses } = AddressStore;
+  const formRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const isCreated = address?.id ? false : true;
+
   function onSave() {
     if (!formRef.current) return;
 
     formRef.current.handleSubmit(); // on validate from
   }
   async function save(payload) {
-    await dispatch.Address.createAddress(payload);
-    notifications.show("Address is created", {
-      severity: "success",
-      autoHideDuration: 4000,
-    });
-    loadData();
-    onClose();
+    setLoading(true);
+    try {
+      if (isCreated) {
+        await dispatch.Address.createAddress({
+          ...payload,
+          ...(!addresses.length && {
+            is_default: true,
+          }),
+        });
+      } else {
+        await dispatch.Address.updateAddressById({
+          id: address.id,
+          payload,
+        });
+      }
+      const message = isCreated
+        ? "Address is created successfully"
+        : "Address is changed successfully";
+      notifications.show(message, {
+        severity: "success",
+        autoHideDuration: 4000,
+      });
+      loadData();
+      onClose();
+      setLoading(false);
+    } catch {
+      setLoading(false);
+      notifications.show("Something went wrong while creating", {
+        severity: "error",
+        autoHideDuration: 4000,
+      });
+    }
   }
+
   return (
-    <React.Fragment>
+    <Fragment>
       <Dialog open={openAddressDialog} maxWidth="md">
         <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-          Add new address
+          {isCreated ? "Add new address" : "Edit address"}
         </DialogTitle>
         <IconButton
-          aria-label="close"
           onClick={onClose}
           sx={(theme) => ({
             position: "absolute",
@@ -66,15 +101,15 @@ export default function AddAddressDialog({ openAddressDialog, onClose, loadData 
           <Formik
             innerRef={formRef}
             initialValues={{
-              name: "",
-              telephone: "+855 ",
-              company: "",
-              address1: "",
-              address2: "",
-              city: "",
-              post_code: "",
-              country: "",
-              region: "",
+              name: address?.name || "",
+              telephone: address?.telephone || "+855 ",
+              company: address?.company || "",
+              address1: address?.address1 || "",
+              address2: address?.address2 || "",
+              city: address?.city || "",
+              post_code: address?.post_code || "",
+              country: address?.country || "",
+              region: address?.region || "",
             }}
             validationSchema={formSchema}
             enableReinitialize
@@ -176,11 +211,16 @@ export default function AddAddressDialog({ openAddressDialog, onClose, loadData 
           </Formik>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" fullWidth onClick={onSave}>
+          <LoadingButton
+            loading={loading}
+            fullWidth
+            variant="contained"
+            onClick={onSave}
+          >
             Save
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

@@ -1,5 +1,12 @@
-import { getImageByNameAPI } from "../api/file.js";
-import { fetchCartsAPI, updateCartByIdAPI, deleteCartByIdAPI } from "../api/cart.js";
+// import { getImageByNameAPI } from "../api/file.js";
+import {
+  fetchCartsAPI,
+  createCartAPI,
+  updateCartByIdAPI,
+  deleteCartByIdAPI,
+} from "../api/cart.js";
+
+const baseApiURL = process.env.REACT_APP_ROOT_API;
 
 const Cart = {
   state: {
@@ -11,6 +18,11 @@ const Cart = {
       state.carts = data;
       return { ...state };
     },
+    setProductImage(state, data) {
+      const index = state.carts.findIndex(({ id }) => id === data.id);
+      state.carts[index] = data;
+      return { ...state };
+    },
   },
 
   effects: {
@@ -18,19 +30,17 @@ const Cart = {
       const data = await fetchCartsAPI(params);
       this.setCarts(data.data);
 
-      await Promise.all(
-        data.data.map(async (item) => {
-          if (item.product.productImages?.length) {
-            item.product.image = await getImageByNameAPI(
-              item.product.productImages[0].name
-            );
-          }
-        })
-      );
-
-      this.setCarts(data.data);
+      data.data.map((item) => {
+        if (item.product.productImages?.length) {
+          item.product.image = `${baseApiURL}/images/${item.product.productImages[0].name}`;
+          this.setProductImage(item);
+        }
+      });
 
       return data;
+    },
+    async createCart(payload) {
+      return createCartAPI(payload);
     },
     async updateCartById({ id, payload }) {
       return updateCartByIdAPI(id, payload);

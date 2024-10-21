@@ -2,9 +2,9 @@ import * as yup from "yup";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useAlert } from "../../components/BaseAlert.js";
+import { useNotifications } from "@toolpad/core/useNotifications";
 import { Formik, Form, Field } from "formik";
-import { InputText, InputPassword } from "../form/index.js";
+import { InputText, Select } from "../form/index.js";
 import BaseHeader from "../../components/BaseHeader.js";
 
 import { Card, CardActions, CardContent, Box, Typography } from "@mui/material";
@@ -12,98 +12,145 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import HttpsIcon from "@mui/icons-material/Https";
 
 const formSchema = yup.object().shape({
+  first_name: yup.string().required("Field required"),
+  last_name: yup.string().required("Field required"),
+  gender: yup.string().required("Field required"),
   email: yup
     .string()
     .email("Please enter a valid email")
     .required("Field required"),
-  password: yup.string().required("Field required"),
 });
+const genders = [
+  { id: "male", name: "Male" },
+  { id: "female", name: "Female" },
+];
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { showNotification } = useAlert();
+  const notifications = useNotifications();
   const [loading, setLoading] = useState(false);
 
-  async function connect(form) {
+  function goToLogin() {
+    navigate("/login");
+  }
+  async function save(form) {
     setLoading(true);
     try {
-      const { can_see_menus } = await dispatch.User.login(form);
+      await dispatch.User.register(form);
       setLoading(false);
 
-      await dispatch.User.fetchUser();
-      if (can_see_menus) {
-        return navigate("/admin/product");
-      }
-
-      navigate("/");
+      notifications.show(
+        "We have sent an account registration to your email address",
+        {
+          severity: "success",
+        }
+      );
+      navigate("/login");
     } catch ({ status, response }) {
       setLoading(false);
-      if (status === 404 && response.data) {
-        return showNotification(response.data.message, "error");
+      if (status === 412 && response.data) {
+        const message = Object.values(response.data.message)[0];
+        return notifications.show(message, {
+          severity: "error",
+          autoHideDuration: 3000,
+        });
       }
 
-      showNotification("Something went wrong while connecting", "error");
+      notifications.show("Something went wrong while connecting", {
+        severity: "error",
+        autoHideDuration: 3000,
+      });
     }
   }
 
   return (
     <div>
-      <BaseHeader title="CC COMPUTER" />
+      <BaseHeader />
       <Box
-        sx={{ display: "flex", justifyContent: "center", marginTop: "60px" }}
+        sx={{ display: "flex", justifyContent: "center", marginTop: "30px" }}
       >
         <Formik
           initialValues={{
+            first_name: "",
+            last_name: "",
+            gender: "",
             email: "",
-            password: "",
           }}
           validationSchema={formSchema}
-          onSubmit={connect}
+          onSubmit={save}
         >
           {() => (
             <Form>
-              <Card
-                elevation={0}
-                sx={{
-                  width: 500,
-                  textAlign: "center",
-                }}
-              >
+              <Card elevation={0} sx={{ width: 500 }}>
                 <CardContent>
-                  <HttpsIcon fontSize="large" />
-                  <Typography
-                    component="h1"
-                    variant="h4"
-                    sx={{
-                      fontSize: "clamp(2rem, 10vw, 2rem)",
-                    }}
-                  >
-                    Sign up an account
-                  </Typography>
-                  <p>Welcome to Public of Gamer, please sign up to continue</p>
+                  <div style={{ textAlign: "center" }}>
+                    <HttpsIcon fontSize="large" />
+                    <Typography
+                      component="h1"
+                      variant="h4"
+                      sx={{
+                        fontSize: "clamp(2rem, 10vw, 2rem)",
+                      }}
+                    >
+                      Sign up an account
+                    </Typography>
+                    <p>
+                      Welcome to Public of Gamer, please sign up to continue
+                    </p>
+                  </div>
+                  <Field
+                    component={InputText}
+                    name="first_name"
+                    label="First name"
+                    required
+                  />
+                  <Field
+                    component={InputText}
+                    name="last_name"
+                    label="Last name"
+                    required
+                  />
+                  <Field
+                    component={Select}
+                    name="gender"
+                    label="Gender"
+                    textValue="id"
+                    textShow="name"
+                    items={genders}
+                    required
+                  />
                   <Field
                     component={InputText}
                     name="email"
                     label="Email"
                     required
                   />
-                  <Field
-                    component={InputPassword}
-                    name="password"
-                    label="Password"
-                    required
-                  />
                 </CardContent>
                 <CardActions>
-                  <LoadingButton
-                    type="submit"
-                    loading={loading}
-                    fullWidth
-                    variant="contained"
-                  >
-                    SIGN UP
-                  </LoadingButton>
+                  <div style={{ width: "100%", textAlign: "center" }}>
+                    <LoadingButton
+                      type="submit"
+                      loading={loading}
+                      fullWidth
+                      variant="contained"
+                    >
+                      SIGN UP
+                    </LoadingButton>
+                    <div>
+                      <p>You already have an account,</p>
+                      <Typography
+                        component="strong"
+                        sx={(theme) => ({
+                          color: theme.palette.primary.main,
+                          cursor: "pointer",
+                        })}
+                        onClick={goToLogin}
+                      >
+                        Sign in
+                      </Typography>
+                    </div>
+                  </div>
                 </CardActions>
               </Card>
             </Form>

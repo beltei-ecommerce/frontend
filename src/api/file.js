@@ -7,11 +7,15 @@ export async function getFileByNameAPI(filename) {
 }
 
 export async function getImageByNameAPI(filename) {
-  const file = await getFileByNameAPI(filename);
-  return `data:image/png;base64,${window.btoa(
-    new Uint8Array(file).reduce(
-      (data, byte) => data + String.fromCharCode(byte),
-      ""
-    )
-  )}`;
+  try {
+    const file = await getFileByNameAPI(filename);
+    return `data:image/png;base64,${window.btoa(
+      new Uint8Array(file).reduce(
+        (data, byte) => data + String.fromCharCode(byte),
+        ""
+      )
+    )}`;
+  } catch {
+    return null;
+  }
 }

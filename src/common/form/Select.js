@@ -16,7 +16,7 @@ export default function BasicSelect({
   ...props
 }) {
   return (
-    <FormControl {...props} fullWidth size="small" margin="dense">
+    <FormControl {...props} fullWidth size="small" margin="dense" error={(form.touched[field.name] && form.errors[field.name])}>
       <InputLabel id={field.name}>{label}</InputLabel>
 
       <Select {...field} labelId={field.name}>

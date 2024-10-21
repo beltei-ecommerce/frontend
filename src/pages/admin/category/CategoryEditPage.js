@@ -6,8 +6,9 @@ import { Box, Button, Card, CardContent } from "@mui/material";
 import { Close as CloseIcon, SaveAs as SaveAsIcon } from "@mui/icons-material";
 import { Formik, Form, Field } from "formik";
 import { InputText } from "../../../common/form";
-import { useAlert } from "../../../components/BaseAlert.js";
+import { useNotifications } from "@toolpad/core/useNotifications";
 import AdminHeader from "../../../components/AdminHeader.js";
+import BaseLoading from "../../../components/BaseLoading.js";
 
 const formSchema = yup.object().shape({
   name: yup.string().required("Field required"),
@@ -22,12 +23,13 @@ export default function CategoryEditPage() {
   // Variables
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { showNotification } = useAlert();
+  const notifications = useNotifications();
   const formRef = useRef(null);
   const { id } = useParams();
   const isCreated = id ? false : true;
   const [title, setTitle] = useState("");
   const [initialForm, setInitialForm] = useState({ name: "" });
+  const [loading, setLoading] = useState(false);
 
   // Methods
   async function reloadCategory() {
@@ -36,9 +38,11 @@ export default function CategoryEditPage() {
       return;
     }
 
+    setLoading(true);
     const { data } = await dispatch.Category.getCategoryById(id);
     setTitle(`N°${id} | ${data.name}`);
     setInitialForm(data);
+    setLoading(false);
   }
   function onSave() {
     if (!formRef.current) return;
@@ -46,26 +50,31 @@ export default function CategoryEditPage() {
     formRef.current.handleSubmit(); // on validate from
   }
   async function save(payload) {
+    setLoading(true);
     try {
       if (isCreated) {
         await dispatch.Category.createCategory(payload);
       } else {
         await dispatch.Category.updateCategoryById({ id, payload });
       }
-      showNotification(
-        isCreated
-          ? "Category successfully created"
-          : "Category successfully updated",
-        "success"
-      );
+      const message = isCreated
+        ? "Category successfully created"
+        : "Category successfully updated";
+      notifications.show(message, {
+        severity: "success",
+        autoHideDuration: 4000,
+      });
+      setLoading(false);
       exit();
     } catch {
-      return showNotification(
-        isCreated
-          ? "Something went wrong while creating"
-          : "Something went wrong while updating",
-        "error"
-      );
+      setLoading(false);
+      const message = isCreated
+        ? "Something went wrong while creating"
+        : "Something went wrong while updating";
+      notifications.show(message, {
+        severity: "error",
+        autoHideDuration: 4000,
+      });
     }
   }
   function exit() {
@@ -74,6 +83,7 @@ export default function CategoryEditPage() {
 
   return (
     <div>
+      <BaseLoading loading={loading} />
       <Box component="main" sx={{ marginLeft: "4rem", p: 2 }}>
         <AdminHeader title={title} hideBth={false}>
           <Button

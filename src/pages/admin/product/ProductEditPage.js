@@ -6,8 +6,9 @@ import { Box, Button, Card, CardContent, Grid } from "@mui/material";
 import { Close as CloseIcon, SaveAs as SaveAsIcon } from "@mui/icons-material";
 import { Formik, Form, Field } from "formik";
 import { InputText, TextArea, Select } from "../../../common/form";
-import { useAlert } from "../../../components/BaseAlert.js";
+import { useNotifications } from "@toolpad/core/useNotifications";
 import AdminHeader from "../../../components/AdminHeader.js";
+import BaseLoading from "../../../components/BaseLoading.js";
 
 const formSchema = yup.object().shape({
   name: yup.string().required("Field required"),
@@ -22,7 +23,7 @@ export default function ProductEditPage() {
   // Variables
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { showNotification } = useAlert();
+  const notifications = useNotifications();
   const CategoryStore = useSelector((store) => store.Category);
   const { categories } = CategoryStore;
   const formRef = useRef(null);
@@ -36,19 +37,22 @@ export default function ProductEditPage() {
     price: "",
     description: "",
   });
+  const [loading, setLoading] = useState(false);
 
   // Methods
   async function reloadProduct() {
+    setLoading(true);
     await dispatch.Category.getCategories();
 
     if (isCreated) {
       setTitle("Create new product");
-      return;
+    } else {
+      const { data } = await dispatch.Product.getProductById(id);
+      setTitle(`N°${id} | ${data.name}`);
+      setInitialForm(data);
     }
 
-    const { data } = await dispatch.Product.getProductById(id);
-    setTitle(`N°${id} | ${data.name}`);
-    setInitialForm(data);
+    setLoading(false);
   }
   function onSave() {
     if (!formRef.current) return;
@@ -56,26 +60,31 @@ export default function ProductEditPage() {
     formRef.current.handleSubmit(); // on validate from
   }
   async function save(payload) {
+    setLoading(true);
     try {
       if (isCreated) {
         await dispatch.Product.createProduct(payload);
       } else {
         await dispatch.Product.updateProductById({ id, payload });
       }
-      showNotification(
-        isCreated
-          ? "Product successfully created"
-          : "Product successfully updated",
-        "success"
-      );
+      const message = isCreated
+        ? "Product successfully created"
+        : "Product successfully updated";
+      notifications.show(message, {
+        severity: "success",
+        autoHideDuration: 4000,
+      });
+      setLoading(false);
       exit();
     } catch {
-      return showNotification(
-        isCreated
-          ? "Something went wrong while creating"
-          : "Something went wrong while updating",
-        "error"
-      );
+      setLoading(false);
+      const message = isCreated
+        ? "Something went wrong while creating"
+        : "Something went wrong while updating";
+      notifications.show(message, {
+        severity: "error",
+        autoHideDuration: 4000,
+      });
     }
   }
   function exit() {
@@ -84,6 +93,7 @@ export default function ProductEditPage() {
 
   return (
     <div>
+      <BaseLoading loading={loading} />
       <Box component="main" sx={{ marginLeft: "4rem", p: 2 }}>
         <AdminHeader title={title} hideBth={false}>
           <Button

@@ -83,7 +83,7 @@ const Drawer = styled(MuiDrawer, {
 
 const menus = [
   {
-    title: "Category",
+    title: "Brand",
     icon: DashboardCustomizeIcon,
     path: "/admin/category",
   },

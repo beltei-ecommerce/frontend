@@ -16,7 +16,8 @@ import AdminHeader from "../../../components/AdminHeader.js";
 
 const headers = [
   { id: "id", label: "N°", minWidth: 10 },
-  { id: "name", label: "Name", minWidth: 300 },
+  { id: "name", label: "Name", minWidth: 500 },
+  { id: "number_of_products", label: "Number of products", minWidth: 10 },
   {
     id: "created_at",
     label: "Created On",
@@ -72,7 +73,7 @@ export default function AdminCategoryPage() {
     <div>
       <Box component="main" sx={{ marginLeft: "4rem", p: 2 }}>
         <AdminHeader
-          title="Categories"
+          title="Brands"
           onCreate={() => {
             goToEdit();
           }}

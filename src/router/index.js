@@ -4,6 +4,8 @@ import { ProtectedRoutes } from "./guards.js";
 // Authentication
 import LoginPage from "../common/auth/LoginPage.js";
 import RegisterPage from "../common/auth/RegisterPage.js";
+import ForgotPasswordPage from "../common/auth/ForgotPasswordPage.js";
+import ResetPasswordPage from "../common/auth/ResetPasswordPage.js";
 
 // Admin
 import AdminHomePage from "../pages/admin/AdminHomePage.js";
@@ -14,14 +16,18 @@ import CategoryEditPage from "../pages/admin/category/CategoryEditPage.js";
 
 // User
 import HomePage from "../pages/home/HomePage.js";
+import ProdoctPage from "../pages/home/ProdoctPage.js";
 import CartPage from "../pages/home/CartPage.js";
 import CheckoutPage from "../pages/home/CheckoutPage.js";
+import OrderPage from "../pages/home/OrderPage.js";
 
 export default function InitRouter() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<RegisterPage />} />
+      <Route path="/auth/reset_password" element={<ResetPasswordPage />} />
+      <Route path="/forgot_password" element={<ForgotPasswordPage />} />
 
       {/* USER ---------------------- */}
       <Route
@@ -29,6 +35,14 @@ export default function InitRouter() {
         element={
           <ProtectedRoutes>
             <HomePage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/item/:id"
+        element={
+          <ProtectedRoutes>
+            <ProdoctPage />
           </ProtectedRoutes>
         }
       />
@@ -45,6 +59,14 @@ export default function InitRouter() {
         element={
           <ProtectedRoutes>
             <CheckoutPage />
+          </ProtectedRoutes>
+        }
+      />
+      <Route
+        path="/order"
+        element={
+          <ProtectedRoutes>
+            <OrderPage />
           </ProtectedRoutes>
         }
       />

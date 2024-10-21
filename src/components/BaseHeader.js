@@ -1,5 +1,6 @@
+import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/images/logo.png";
 import {
   AppBar,
@@ -8,21 +9,58 @@ import {
   IconButton,
   Badge,
   Typography,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  Tooltip,
 } from "@mui/material";
 import {
-  // AccountCircle as AccountCircleIcon,
+  PersonOutline as PersonOutlineIcon,
   Notifications as NotificationsIcon,
   ShoppingCartCheckout as ShoppingCartCheckoutIcon,
   Login as LoginIcon,
+  LibraryBooks as LibraryBooksIcon,
+  FavoriteBorder as FavoriteBorderIcon,
+  Settings,
+  Logout,
 } from "@mui/icons-material";
 
 export default function BaseHeader({ children }) {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { items_in_cart } = useSelector((store) => store.User);
 
-  function goToLogin(path) {
+  const isAuthenticationPage = [
+    "/login",
+    "/signup",
+    "/forgot_password",
+    "/auth/reset_password",
+  ].includes(location.pathname);
+  const { items_in_cart, token, number_of_orders } = useSelector(
+    (store) => store.User
+  );
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    if (!token) {
+      return goTo("/login");
+    }
+
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  function goTo(path) {
     return navigate(path);
+  }
+  function logout() {
+    handleClose();
+    dispatch.User.logout();
+    return goTo("/login");
   }
 
   return (
@@ -33,49 +71,114 @@ export default function BaseHeader({ children }) {
             fontSize: "1.2rem",
             cursor: "pointer",
           }}
-          onClick={() => goToLogin("/")}
+          onClick={() => goTo("/")}
         >
           <img src={logo} alt="logo" style={{ height: "50px" }} />
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         {children}
         <Box sx={{ flexGrow: 1 }} />
-        {location.pathname !== "/login" && (
+        {!isAuthenticationPage && (
           <Box>
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={() => goToLogin("/cart")}
+            <Tooltip title="My cart">
+              <IconButton
+                size="large"
+                color="inherit"
+                onClick={() => goTo("/cart")}
+              >
+                <Badge badgeContent={items_in_cart} color="error">
+                  <ShoppingCartCheckoutIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Notifications">
+              <IconButton size="large" color="inherit">
+                <Badge badgeContent={17} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title={token ? "Account settings" : "Account login"}>
+              <IconButton
+                onClick={handleClick}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls={open ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                color="inherit"
+              >
+                {token && <PersonOutlineIcon />}
+                {!token && <LoginIcon />}
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorEl}
+              id="account-menu"
+              open={open}
+              onClose={handleClose}
+              onClick={handleClose}
+              slotProps={{
+                paper: {
+                  elevation: 0,
+                  sx: {
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    mt: 1.5,
+                    "& .MuiAvatar-root": {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    "&::before": {
+                      content: '""',
+                      display: "block",
+                      position: "absolute",
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
+                      zIndex: 0,
+                    },
+                  },
+                },
+              }}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-              <Badge badgeContent={items_in_cart} color="error">
-                <ShoppingCartCheckoutIcon />
-              </Badge>
-            </IconButton>
-
-            <IconButton size="large" color="inherit">
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-
-            <IconButton
-              size="large"
-              edge="end"
-              aria-haspopup="true"
-              color="inherit"
-              onClick={() => goToLogin("/login")}
-            >
-              <LoginIcon />
-            </IconButton>
-
-            {/* <IconButton
-            size="large"
-            edge="end"
-            aria-haspopup="true"
-            color="inherit"
-          >
-            <AccountCircleIcon />
-          </IconButton> */}
+              <MenuItem onClick={() => goTo("/order")}>
+                <ListItemIcon>
+                  <Badge badgeContent={number_of_orders} color="error">
+                    <LibraryBooksIcon fontSize="small" />
+                  </Badge>
+                </ListItemIcon>
+                My orders
+              </MenuItem>
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon>
+                  <FavoriteBorderIcon fontSize="small" />
+                </ListItemIcon>
+                My favorites
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon>
+                  <Settings fontSize="small" />
+                </ListItemIcon>
+                Settings
+              </MenuItem>
+              <MenuItem onClick={logout}>
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
           </Box>
         )}
       </Toolbar>

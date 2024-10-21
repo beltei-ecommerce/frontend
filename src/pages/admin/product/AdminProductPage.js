@@ -25,7 +25,7 @@ const headers = [
     minWidth: 50,
     format: (value) => `$${Number(value).toFixed(2)}`,
   },
-  { id: "category.name", label: "Category", minWidth: 50 },
+  { id: "category.name", label: "Brand", minWidth: 50 },
   {
     id: "created_at",
     label: "Created On",

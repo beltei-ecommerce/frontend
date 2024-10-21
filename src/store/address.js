@@ -1,4 +1,9 @@
-import { createAddressAPI, fetchAddressesAPI } from "../api/address.js";
+import {
+  createAddressAPI,
+  fetchAddressesAPI,
+  updateAddressByIdAPI,
+  deleteAddressByIdAPI,
+} from "../api/address.js";
 
 const Address = {
   state: {
@@ -20,6 +25,12 @@ const Address = {
     },
     async createAddress(payload) {
       return createAddressAPI(payload);
+    },
+    async updateAddressById({ id, payload }) {
+      return updateAddressByIdAPI(id, payload);
+    },
+    async deleteAddressById(id) {
+      return deleteAddressByIdAPI(id);
     },
   },
 };

@@ -12,7 +12,6 @@ import {
   Skeleton,
   IconButton,
   Typography,
-  TextField,
   Card,
 } from "@mui/material";
 import {
@@ -29,8 +28,7 @@ export default function CartPage() {
   const CartStore = useSelector((store) => store.Cart);
   const UserStore = useSelector((store) => store.User);
   const { carts } = CartStore;
-  const [disabledCheckoutBtn, setDisabledCheckoutBtn] = useState(false);
-  const itemsRef = useRef([]);
+  const disabledCheckoutBtn = !carts.length;
 
   useEffect(() => {
     if (!UserStore.token) return;
@@ -46,7 +44,7 @@ export default function CartPage() {
   }
   async function onDeleteItem(id) {
     const confirmed = await dialogs.confirm(
-      "Are you sure to delete your item?",
+      "Are you sure to remove your item?",
       {
         okText: "Yes",
         cancelText: "No",
@@ -56,7 +54,7 @@ export default function CartPage() {
 
     try {
       await dispatch.Cart.deleteCartById(id);
-      notifications.show("Your item deleted", {
+      notifications.show("Your item reomved", {
         severity: "success",
         autoHideDuration: 4000,
       });
@@ -119,7 +117,7 @@ export default function CartPage() {
                 Name
               </Grid>
               <Grid item xs={1}>
-                Code
+                Brand
               </Grid>
               <Grid item xs={2}>
                 Available quantity
@@ -181,7 +179,7 @@ export default function CartPage() {
                   xs={1}
                   sx={{ display: "flex", alignItems: "center" }}
                 >
-                  {row.product.product_code}
+                  {row.product.category.name}
                 </Grid>
                 <Grid
                   item
