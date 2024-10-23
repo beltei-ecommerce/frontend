@@ -27,6 +27,8 @@ export default function ProdoctPage() {
   const ProductStore = useSelector((store) => store.Product);
   const [quantityToCart, setQuantityToCart] = useState(1);
   const { product, products } = ProductStore;
+  const [selectedImageId, setSelectdImageId] = useState(1);
+  const [selectedImage, setSelectdImage] = useState(null);
 
   useEffect(() => {
     loadData(); // eslint-disable-next-line
@@ -34,10 +36,13 @@ export default function ProdoctPage() {
   useEffect(() => {
     if (!product.fk_category_id) return;
 
+    setSelectdImageId(product.productImages[0]?.id);
+
     dispatch.Product.getProducts({
       isScrollMore: false,
       include_product_images: true,
       fk_category_id: product.fk_category_id,
+      not_include_ids: JSON.stringify([product.id]),
       page: 1,
       limit: 12,
     });
@@ -50,6 +55,8 @@ export default function ProdoctPage() {
     return window.open(`/item/${id}`, "_blank");
   }
   async function addToCart() {
+    if (!product.id) return;
+
     await dispatch.Cart.createCart({
       fk_product_id: product.id,
       quantity: quantityToCart,
@@ -67,6 +74,10 @@ export default function ProdoctPage() {
       return;
     }
     setQuantityToCart((old) => old - 1);
+  }
+  function onClickImage({ id, image }) {
+    setSelectdImageId(id);
+    setSelectdImage(image);
   }
 
   return (
@@ -89,18 +100,31 @@ export default function ProdoctPage() {
                 </div>
               )}
               {product.image && (
-                <CardMedia component="img" height="280" src={product.image} />
+                <CardMedia
+                  component="img"
+                  height="280"
+                  sx={{ p: 1 }}
+                  src={selectedImage || product.image}
+                />
               )}
-              <div style={{ display: "flex", justifyContent: "left" }}>
+              <div
+                style={{ display: "flex", justifyContent: "left", gap: "8px" }}
+              >
                 {product.productImages.length > 1 &&
                   product.productImages.map((row) => {
                     return (
-                      <CardMedia
+                      <Card
                         key={row.id}
-                        component="img"
-                        height="80"
-                        src={row.image}
-                      />
+                        variant={selectedImageId === row.id ? "outlined" : ""}
+                        sx={{ cursor: "pointer", p: 1 }}
+                        onClick={() => onClickImage(row)}
+                      >
+                        <CardMedia
+                          component="img"
+                          height="80"
+                          src={row.image}
+                        />
+                      </Card>
                     );
                   })}
               </div>
@@ -168,6 +192,12 @@ export default function ProdoctPage() {
           </Typography>
           <Divider />
           <p>{product.description}</p>
+          <div
+            style={{ marginBottom: "8px" }}
+            dangerouslySetInnerHTML={{
+              __html: product.description2?.replace(/\n/g, "<br />"),
+            }}
+          />
           <Typography
             gutterBottom
             variant="h6"

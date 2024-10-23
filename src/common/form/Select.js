@@ -22,7 +22,7 @@ export default function BasicSelect({
       <Select {...field} labelId={field.name}>
         {items.map((item) => {
           return (
-            <MenuItem value={item.id} key={item[textValue]}>
+            <MenuItem value={item[textValue]} key={item[textValue]}>
               {item[textShow]}
             </MenuItem>
           );

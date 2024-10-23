@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useDialogs } from "@toolpad/core/useDialogs";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import BaseHeader from "../../components/BaseHeader.js";
+import BaseLoading from "../../components/BaseLoading.js";
 import {
   Box,
   CardMedia,
@@ -21,13 +22,16 @@ export default function CartPage() {
   const dispatch = useDispatch();
   const OrderStore = useSelector((store) => store.Order);
   const { orders } = OrderStore;
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadData(); // eslint-disable-next-line
   }, []);
 
   async function loadData() {
+    setLoading(true);
     await dispatch.Order.getOrders();
+    setLoading(false);
   }
   function goTo(path) {
     return navigate(path);
@@ -41,19 +45,27 @@ export default function CartPage() {
       }
     );
     if (!confirmed) return;
-    await dispatch.Order.deleteOrderById(id);
-    notifications.show("Your order removed", {
-      severity: "success",
-      autoHideDuration: 4000,
-    });
-    await loadData();
+
+    try {
+      setLoading(true);
+      await dispatch.Order.deleteOrderById(id);
+      notifications.show("Your order is removed", {
+        severity: "success",
+        autoHideDuration: 4000,
+      });
+      setLoading(false);
+      await loadData();
+    } catch {
+      setLoading(false);
+    }
   }
 
   return (
     <div>
       <BaseHeader />
+      <BaseLoading loading={loading} />
       <Box sx={{ mx: 36, my: 3 }}>
-        {!orders.length && (
+        {!orders.length && !loading && (
           <div style={{ textAlign: "center" }}>
             <Typography
               variant="body1"
@@ -71,13 +83,23 @@ export default function CartPage() {
         {orders.map((row) => {
           return (
             <Card sx={{ mt: 1, px: 3 }} key={row.id} elevation={0}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ textAlign: "left", marginTop: "12px" }}>
-                  <small>Order ID: {row.id}</small>
+              <Grid container spacing={1}>
+                <Grid item xs={8}>
+                  <small>
+                    <strong>Order ID</strong>: {row.id}
+                  </small>
                   <br />
-                  <small>Order date: {row.created_at}</small>
-                </div>
-                <div>
+                  <small>
+                    <strong>Order date</strong>: {row.created_at}
+                  </small>
+                  <br />
+                  <small>
+                    <strong>Shipping address:</strong> {row.contact_name}{" "}
+                    {row.telephone}, {row.address1} / {row.address2},{" "}
+                    {row.region}, {row.post_code}, {row.city}, {row.country}
+                  </small>
+                </Grid>
+                <Grid item xs={4}>
                   <p style={{ textAlign: "right" }}>
                     <strong>Total: US ${Number(row.amount).toFixed(2)}</strong>
                     <Button
@@ -88,8 +110,8 @@ export default function CartPage() {
                       Remove
                     </Button>
                   </p>
-                </div>
-              </div>
+                </Grid>
+              </Grid>
               {row.orderProducts.map((item) => {
                 return (
                   <Grid container spacing={1} key={item.id}>
@@ -129,10 +151,12 @@ export default function CartPage() {
 
                     <Grid item xs={8}>
                       <p>{item.product.name}</p>
-                      <p>Brand: {item.product.category.name}</p>
                       <p>
-                        US ${Number(item.unit_price).toFixed(2)}{" "}
-                        <strong>x{item.quantity}</strong>
+                        <strong>Brand</strong>: {item.product.category.name}
+                      </p>
+                      <p>
+                        US ${Number(item.unit_price).toFixed(2)} x
+                        {item.quantity}
                       </p>
                     </Grid>
                     <Grid item xs={2} sx={{ textAlign: "right" }}>

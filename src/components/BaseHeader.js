@@ -37,7 +37,7 @@ export default function BaseHeader({ children }) {
     "/forgot_password",
     "/auth/reset_password",
   ].includes(location.pathname);
-  const { items_in_cart, token, number_of_orders } = useSelector(
+  const { user, items_in_cart, token, number_of_orders } = useSelector(
     (store) => store.User
   );
 
@@ -94,7 +94,7 @@ export default function BaseHeader({ children }) {
 
             <Tooltip title="Notifications">
               <IconButton size="large" color="inherit">
-                <Badge badgeContent={17} color="error">
+                <Badge badgeContent={0} color="error">
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
@@ -114,6 +114,7 @@ export default function BaseHeader({ children }) {
                 {!token && <LoginIcon />}
               </IconButton>
             </Tooltip>
+            {token && <span>Hi, {user.first_name}</span>}
             <Menu
               anchorEl={anchorEl}
               id="account-menu"
@@ -159,14 +160,14 @@ export default function BaseHeader({ children }) {
                 </ListItemIcon>
                 My orders
               </MenuItem>
-              <MenuItem onClick={handleClose}>
+              {/* <MenuItem onClick={handleClose}>
                 <ListItemIcon>
                   <FavoriteBorderIcon fontSize="small" />
                 </ListItemIcon>
                 My favorites
-              </MenuItem>
+              </MenuItem> */}
               <Divider />
-              <MenuItem onClick={handleClose}>
+              <MenuItem onClick={() => goTo("/setting")}>
                 <ListItemIcon>
                   <Settings fontSize="small" />
                 </ListItemIcon>

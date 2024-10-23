@@ -143,7 +143,7 @@ export default function HomePage() {
               value={tab}
               onChange={changeTab}
               variant="scrollable"
-              scrollButtons={false}
+              scrollButtons={true}
               aria-label="scrollable prevent tabs example"
             >
               {[{ name: "POPULAR" }, ...categories].map((row, index) => {
@@ -182,11 +182,10 @@ export default function HomePage() {
               return (
                 <Grid item lg={3} md={3} sm={4} key={row.id}>
                   <Card
-                    variant="outlined"
+                    elevation={0}
                     sx={{
                       height: "400px",
                       p: 2,
-                      background: "none",
                       cursor: "pointer",
                     }}
                     onClick={() => goToProduct(row)}

@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [openAddAddressDialog, setOpenAddAddressDialog] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [defaultAddress, setDefaultAddress] = useState({});
+  const [defaultAddress, setDefaultAddress] = useState(null);
 
   useEffect(() => {
     if (!UserStore.token) return;
@@ -119,7 +119,7 @@ export default function CheckoutPage() {
                     Shipping address
                   </Typography>
 
-                  {!!addresses.length && (
+                  {!!addresses.length && defaultAddress && (
                     <Typography variant="body1">
                       {defaultAddress.name} {defaultAddress.telephone},{" "}
                       {defaultAddress.address1} / {defaultAddress.address2},{" "}
@@ -127,7 +127,7 @@ export default function CheckoutPage() {
                       {defaultAddress.city}, {defaultAddress.country}
                     </Typography>
                   )}
-                  {!addresses.length && (
+                  {!defaultAddress && (
                     <Typography variant="body1">Add new address</Typography>
                   )}
                 </Grid>
@@ -279,7 +279,7 @@ export default function CheckoutPage() {
                 variant="contained"
                 fullWidth
                 sx={{ mt: 2 }}
-                disabled={!addresses.length || !carts.length}
+                disabled={!addresses.length || !carts.length || !defaultAddress}
                 onClick={handleOpenPaymentDialog}
               >
                 Place order

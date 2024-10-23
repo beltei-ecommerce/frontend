@@ -6,6 +6,7 @@ import LoginPage from "../common/auth/LoginPage.js";
 import RegisterPage from "../common/auth/RegisterPage.js";
 import ForgotPasswordPage from "../common/auth/ForgotPasswordPage.js";
 import ResetPasswordPage from "../common/auth/ResetPasswordPage.js";
+import SettingPage from "../common/auth/SettingPage.js";
 
 // Admin
 import AdminHomePage from "../pages/admin/AdminHomePage.js";
@@ -28,6 +29,14 @@ export default function InitRouter() {
       <Route path="/signup" element={<RegisterPage />} />
       <Route path="/auth/reset_password" element={<ResetPasswordPage />} />
       <Route path="/forgot_password" element={<ForgotPasswordPage />} />
+      <Route
+        path="/setting"
+        element={
+          <ProtectedRoutes>
+            <SettingPage />
+          </ProtectedRoutes>
+        }
+      />
 
       {/* USER ---------------------- */}
       <Route

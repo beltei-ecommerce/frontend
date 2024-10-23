@@ -2,6 +2,7 @@ import {
   fetchUserAPI,
   loginAPI,
   registerAPI,
+  updateUserAPI,
   verifyResetPasswordAPI,
   resetPasswordAPI,
   sendRequestResetPasswordAPI,
@@ -60,6 +61,9 @@ const User = {
     },
     async register(payload) {
       return registerAPI(payload);
+    },
+    async updateUser(payload) {
+      return updateUserAPI(payload);
     },
     async verifyResetPassword(params) {
       return verifyResetPasswordAPI(params);

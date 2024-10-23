@@ -12,6 +12,10 @@ export async function registerAPI(payload) {
   return http.post("/auth/register", payload);
 }
 
+export async function updateUserAPI(payload) {
+  return http.put("/auth/user", payload);
+}
+
 export async function verifyResetPasswordAPI(params) {
   return http.get("/auth/verify_reset_password", { params });
 }

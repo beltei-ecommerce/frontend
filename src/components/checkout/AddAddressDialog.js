@@ -63,7 +63,7 @@ export default function AddAddressDialog({
       }
       const message = isCreated
         ? "Address is created successfully"
-        : "Address is changed successfully";
+        : "Address is updated successfully";
       notifications.show(message, {
         severity: "success",
         autoHideDuration: 4000,

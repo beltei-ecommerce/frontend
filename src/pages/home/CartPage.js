@@ -1,10 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useDialogs } from "@toolpad/core/useDialogs";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import Button from "@mui/material/Button";
 import BaseHeader from "../../components/BaseHeader.js";
+import BaseLoading from "../../components/BaseLoading.js";
 import {
   Box,
   CardMedia,
@@ -29,6 +30,7 @@ export default function CartPage() {
   const UserStore = useSelector((store) => store.User);
   const { carts } = CartStore;
   const disabledCheckoutBtn = !carts.length;
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!UserStore.token) return;
@@ -37,7 +39,9 @@ export default function CartPage() {
   }, []);
 
   async function loadData() {
+    setLoading(true);
     await dispatch.Cart.getCarts();
+    setLoading(false);
   }
   function goTo(path) {
     return navigate(path);
@@ -52,28 +56,34 @@ export default function CartPage() {
     );
     if (!confirmed) return;
 
+    setLoading(true);
     try {
       await dispatch.Cart.deleteCartById(id);
-      notifications.show("Your item reomved", {
+      notifications.show("Your item is reomved", {
         severity: "success",
         autoHideDuration: 4000,
       });
       await loadData();
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   }
   async function onChangeItem(item, isPlusQty) {
+    setLoading(true);
     try {
       const quantity = isPlusQty ? item.quantity + 1 : item.quantity - 1;
       const payload = { quantity };
       await dispatch.Cart.updateCartById({ id: item.id, payload });
-      notifications.show("Your quantity updated", {
+      notifications.show("Your quantity is changed", {
         severity: "success",
         autoHideDuration: 4000,
       });
       await loadData();
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   }
@@ -81,6 +91,7 @@ export default function CartPage() {
   return (
     <div>
       <BaseHeader />
+      <BaseLoading loading={loading} />
       <Box sx={{ mx: 24, my: 3 }}>
         {carts.length > 0 && (
           <div style={{ marginBottom: 20, textAlign: "right" }}>
@@ -94,7 +105,7 @@ export default function CartPage() {
           </div>
         )}
 
-        {!carts.length && (
+        {!carts.length && !loading && (
           <div style={{ textAlign: "center" }}>
             <Typography
               variant="body1"
